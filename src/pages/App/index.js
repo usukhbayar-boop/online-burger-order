@@ -7,12 +7,12 @@ import BurgerBuilder from '../../pages/BurgerBuilder';
 function App() {
   return (
     <div>
-      <Toolbar/>
+      <Toolbar />
       <main className={css.Content}>
       <BurgerBuilder />
       </main>
     </div>
-  );
+  )
 }
 
 export default App;
