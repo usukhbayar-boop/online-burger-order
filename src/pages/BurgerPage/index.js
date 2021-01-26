@@ -1,8 +1,17 @@
 import React, { Component } from "react";
 import Burger from "../../components/Burger";
 import BuildControls from "../../components/BuildControls";
+import Modal from "../../components/General/Modal";
+import OrderSummary from "../../components/OrderSummary";
 
 const INGREDIENT_PRICES = {salad: 150, cheese: 250, bacon: 1000, meat: 2300};
+
+const INGREDIENT_NAMES = {
+    bacon: 'Гахайн мах',
+    cheese: 'Бяслаг',
+    meat: 'Үхрийн мах',
+    salad: 'Салад'
+}
 
 class BurgerBuilder extends Component {
 
@@ -14,8 +23,18 @@ class BurgerBuilder extends Component {
             meat: 0
         },
 
-        totalPrice: 1000
+        totalPrice: 1000,
+        purchasing: false,
+        confirmOrder: false
     };
+
+    showConfirmModal = () => {
+        this.setState({confirmOrder: true});
+    }
+
+    hideConfirmModal = () => {
+        this.setState({confirmOrder: false});
+    }
 
     ortsNemeh = type => {
         console.log("=====> " + type);
@@ -25,7 +44,7 @@ class BurgerBuilder extends Component {
 
         const newPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
 
-        this.setState({ totalPrice: newPrice, ingredients: newIngredients});
+        this.setState({ purchasing: true, totalPrice: newPrice, ingredients: newIngredients});
     }
 
     ortsHasah = type => {
@@ -37,7 +56,7 @@ class BurgerBuilder extends Component {
 
             const newPrice = this.state.totalPrice - INGREDIENT_PRICES[type];
 
-            this.setState({totalPrice: newPrice, ingredients: newIngredients});
+            this.setState({ purchasing: newPrice > 1000, totalPrice: newPrice, ingredients: newIngredients});
         }
     }
 
@@ -50,8 +69,11 @@ class BurgerBuilder extends Component {
 
         return(
             <div>
+                <Modal closeConfirmModal={this.hideConfirmModal} show={this.state.confirmOrder}>
+                    <OrderSummary ingredientsNames={INGREDIENT_NAMES} ingredients={this.state.ingredients}/>
+                </Modal>
                 <Burger orts={this.state.ingredients} />
-                <BuildControls price={this.state.totalPrice} disabledIngredients={disabledIngredients} ortsNemeh={this.ortsNemeh} ortsHasah={this.ortsHasah}/>
+                <BuildControls showConfirmModal={this.showConfirmModal} ingredientsNames={INGREDIENT_NAMES} disabled={!this.state.purchasing} price={this.state.totalPrice} disabledIngredients={disabledIngredients} ortsNemeh={this.ortsNemeh} ortsHasah={this.ortsHasah}/>
             </div>
         )
     }
